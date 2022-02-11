@@ -4,6 +4,21 @@
 * Serve a dynamic PHP-driven website.
 * Setup a MySQL database to run SQL scripts, fetch records, and print them in a PHP-driven website.
 
+## Installing Docker Compose
+
+The following command will download the 1.27.4 release and save the executable file at /usr/local/bin/docker-compose, which will make this software globally accessible as docker-compose:
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+```
+
+Next, set the correct permissions so that the docker-compose command is executable:
+```
+sudo chmod +x /usr/local/bin/docker-compose
+```
+To verify that the installation was successful, you can run:
+```
+docker-compose --version
+```
  ## Step 1.Create docker-compose YML file
  
 
@@ -97,11 +112,37 @@ if ($conn->connect_error) {
 } else {
     echo "Connected to MySQL server successfully!";
 }
+
+//create table
+$sql = "CREATE TABLE persons(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    email VARCHAR(70) NOT NULL UNIQUE
+)";
+if(mysqli_query($conn, $sql)){
+    echo "Table created successfully.";
+} else{
+    echo "ERROR: Could not able to execute $sql. " . mysqli_error($conn);
+}
+
 ?>
 
 ```
 
 
 Save the file and refresh your http://localhost:8000/ web address.
+
+
+### Export and import containers
+Exporting a container means creating a compressed file from the container’s file system. The exported file is saved as a ‘gzip’ file.
+```
+docker export container-name | gzip > container-name.gz
+```
+
+This compressed file is then copied over to the new host via file transfer tools such as scp or rsync. In the new host, this gzip file is then imported into a new container.
+```
+zcat container-name.gz | docker import - container-name
+```
 
 
